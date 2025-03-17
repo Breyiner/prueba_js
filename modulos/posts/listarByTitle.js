@@ -1,4 +1,4 @@
-import * as posts from "../posts/";
+import * as posts from "../posts/index.js";
 
 export const getPostsByTitle = async (url, title) => {
 

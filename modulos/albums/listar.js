@@ -1,4 +1,4 @@
-import * as help from "../helpers/";
+import * as help from "../helpers/index.js";
 
 export const getAlbums = async url => {
 

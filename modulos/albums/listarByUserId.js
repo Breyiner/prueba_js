@@ -1,4 +1,4 @@
-import * as help from "../helpers/";
+import * as help from "../helpers/index.js";
 
 export const getAlbumsByUserId = async (url, userId) => {
 
@@ -11,5 +11,5 @@ export const getAlbumsByUserId = async (url, userId) => {
         return respuesta;
     } catch (error) {
         console.error(`Error al obtener los albums: ${error}`);
-    }
+    }                
 }

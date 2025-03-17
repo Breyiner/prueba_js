@@ -1,6 +1,6 @@
-import * as help from "../helpers/";
+import * as help from "../helpers/index.js";
 
-export const getUsersById = async (url,username) => {
+export const getUsersByUsername = async (url,username) => {
 
     return await help.solicitud(`${url}/users?username=${username}`);
 
