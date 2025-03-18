@@ -1,4 +1,4 @@
-import * as help from "../helpers/index.js";
+import {solicitud} from "../helpers/index.js";
 
 export const getTareasByUserIdStatus = async (url, userId, status) => {
 
@@ -7,7 +7,8 @@ export const getTareasByUserIdStatus = async (url, userId, status) => {
             throw new Error("Parámetros inválidos");
         }
 
-        const respuesta = await help.solicitud(`${url}/todos?userId=${userId}&completed=${status}`);
+        const respuesta = await 
+        solicitud(`${url}/todos?userId=${userId}&completed=${status}`);
         return respuesta;
     } catch (error) {
         console.error(`Error al obtener las tareas pendientes: ${error}`);

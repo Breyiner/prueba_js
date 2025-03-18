@@ -1,8 +1,8 @@
-import * as posts from "../posts/index.js";
+import {getPosts} from "../posts/index.js";
 
 export const getPostsByTitle = async (url, title) => {
 
-    const allPosts = await posts.getPosts(url);
+    const allPosts = await getPosts(url);
 
     let regexTitle = new RegExp(title);
 

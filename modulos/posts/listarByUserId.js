@@ -1,4 +1,4 @@
-import * as help from "../helpers/index.js";
+import {solicitud} from "../helpers/index.js";
 
 export const getPostsByUserId = async (url, userId) => {
 
@@ -7,7 +7,7 @@ export const getPostsByUserId = async (url, userId) => {
             throw new Error("Parámetros inválidos");
         }
 
-        const respuesta = await help.solicitud(`${url}/posts?userId=${userId}`);
+        const respuesta = await solicitud(`${url}/posts?userId=${userId}`);
         return respuesta;
     } catch (error) {
         console.error(`Error al obtener los posts: ${error}`);

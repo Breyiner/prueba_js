@@ -1,12 +1,12 @@
-import * as help from './modulos/helpers/index.js';
-import * as users from './modulos/usuarios/index.js';
-import * as tasks from './modulos/tareas/index.js';
-import * as posts from './modulos/posts/index.js';
-import * as comment from './modulos/comments/index.js';
-import * as albums from './modulos/albums/index.js';
-import * as photos from './modulos/fotos/index.js';
+import {URL} from './modulos/helpers/index.js';
+import {getUsuarios, getUsersByUsername} from './modulos/usuarios/index.js';
+import {getTareasByUserIdStatus} from './modulos/tareas/index.js';
+import {getPosts, getPostsByTitle, getPostsByUserId} from './modulos/posts/index.js';
+import {getCommentsByPostId} from './modulos/comments/index.js';
+import {getAlbumsByUserId} from './modulos/albums/index.js';
+import {getPhotosByAlbumId} from './modulos/fotos/index.js';
 
-let opcion, resultado, url = help.URL;
+let opcion; URL
 
 const solicitarParametro = indicador => {
     let respuesta;
@@ -19,11 +19,11 @@ const solicitarParametro = indicador => {
 }
 
 const getTareasPendientes = async () => {
-    const usuarios = await users.getUsuarios(url);
+    const usuarios = await getUsuarios(URL);
 
     return await Promise.all(
         usuarios.map(async user => {
-            const pendings = await tasks.getTareasByUserIdStatus(url, user.id, false);
+            const pendings = await getTareasByUserIdStatus(URL, user.id, false);
 
             return {
                 ...user,
@@ -36,18 +36,18 @@ const getTareasPendientes = async () => {
 const usuariosPorUsername = async () => {
     let username = solicitarParametro("username");
 
-    const usuarios = await users.getUsersByUsername(url, username);
+    const usuarios = await getUsersByUsername(URL, username);
     
     return await Promise.all(
 
       usuarios.map(async usuario => {
 
-        const allAlbums = await albums.getAlbumsByUserId(url, usuario.id);
+        const allAlbums = await getAlbumsByUserId(URL, usuario.id);
 
         let albumsConFotos = await Promise.all(
           allAlbums.map(async album => {
 
-            const albumFotos = await photos.getPhotosByAlbumId(url, album.id);
+            const albumFotos = await getPhotosByAlbumId(URL, album.id);
 
             return { ...album, albumFotos };
           })
@@ -60,13 +60,13 @@ const usuariosPorUsername = async () => {
 const postPorTitulo = async () => {
     let titulo = solicitarParametro("titulo del post");
 
-    const allPosts = await posts.getPostsByTitle(url, titulo);
+    const allPosts = await getPostsByTitle(URL, titulo);
     
     return await Promise.all(
 
       allPosts.map(async post => {
 
-        const comentarios = await comment.getCommentsByPostId(url, post.id);
+        const comentarios = await getCommentsByPostId(URL, post.id);
 
         return { ...post, comentarios };
       })
@@ -74,7 +74,7 @@ const postPorTitulo = async () => {
 }
 
  const nombreTelefonoUsuario = async () => {
-    const usuarios = await users.getUsuarios(url);
+    const usuarios = await getUsuarios(URL);
 
     return await Promise.all(
       usuarios.map(async usuario => {
@@ -89,28 +89,28 @@ const postPorTitulo = async () => {
 
 
 const allDataUser = async () => {
-    const usuarios = await users.getUsuarios(url);
+    const usuarios = await getUsuarios(URL);
     
     return await Promise.all(
 
         usuarios.map(async usuario => {
 
-            const allPosts = await posts.getPostsByUserId(url, usuario.id);
+            const allPosts = await getPostsByUserId(URL, usuario.id);
     
             let postsConComentarios = await Promise.all(
                 allPosts.map(async post => {
-                    const commentsPost = await comment.getCommentsByPostId(url, post.id);
+                    const commentsPost = await getCommentsByPostId(URL, post.id);
         
                     return {...post, commentsPost};
                 })
             );
   
-            const allAlbums = await albums.getAlbumsByUserId(url, usuario.id);
+            const allAlbums = await getAlbumsByUserId(URL, usuario.id);
 
             let albumsConFotos = await Promise.all(
                 allAlbums.map(async album => {
 
-                    const albumFotos = await photos.getPhotosByAlbumId(url, album.id);
+                    const albumFotos = await getPhotosByAlbumId(URL, album.id);
 
                     return { ...album, albumFotos };
                 })
@@ -122,32 +122,43 @@ const allDataUser = async () => {
 }
 
 
-do {
-    opcion = parseInt(prompt("Ingres el número del ejercicio que desea ejecutar (1 - 5):"));
-} while (typeof opcion != "number" || opcion > 5 || opcion < 1);
-
-switch (opcion) {
-    case 1:
-        resultado = getTareasPendientes();
+while (true) {
+    
+    do {
+        opcion = parseInt(prompt("Ingrese el número del ejercicio que desea ejecutar (1 - 5 ó 0 para salir):")) ?? "";
+    } while (Number.isNaN(opcion) || opcion > 5 || opcion < 0);
+    
+    if (opcion == 0) {
+        alert("Programa finalizado con éxito.");
         break;
+    } 
 
-    case 2:
-        resultado = usuariosPorUsername();
-        break;
-
-    case 3:
-        resultado = postPorTitulo();
-        break;
-
-    case 4:
-        resultado = nombreTelefonoUsuario();
-        break;
-
-    case 5:
-        resultado = allDataUser();
-        break;
+    else {
+        console.log(`Ejercicio ${opcion}:`);
+        switch (opcion) {
+            case 1:
+                await getTareasPendientes().then(data => console.log(data));
+                break;
+        
+            case 2:
+                await usuariosPorUsername().then(data => data.length != 0 ?
+                    console.log(data) : console.log("No hay información relacionada")
+                );
+                break;
+        
+            case 3:
+                await postPorTitulo().then(data => data.length != 0 ?
+                    console.log(data) : console.log("No hay información relacionada")
+                );
+                break;
+        
+            case 4:
+                await nombreTelefonoUsuario().then(data => console.log(data));
+                break;
+        
+            case 5:
+                await allDataUser().then(data => console.log(data));
+                break;
+        }
+    }
 }
-
-resultado.then(datos => datos.length != 0 ? 
-    console.log(datos) : 
-    console.log("No se encontró información relacionada"));

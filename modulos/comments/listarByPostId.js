@@ -1,4 +1,4 @@
-import * as help from "../helpers/index.js";
+import {solicitud} from "../helpers/index.js";
 
 export const getCommentsByPostId = async (url, postId) => {
 
@@ -7,7 +7,7 @@ export const getCommentsByPostId = async (url, postId) => {
             throw new Error("Parámetros inválidos");
         }
 
-        const respuesta = await help.solicitud(`${url}/comments?postId=${postId}`);
+        const respuesta = await solicitud(`${url}/comments?postId=${postId}`);
         return respuesta;
     } catch (error) {
         console.error(`Error al obtener los posts: ${error}`);
